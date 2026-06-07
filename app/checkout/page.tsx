@@ -12,15 +12,57 @@ export default function CheckoutPage() {
   const { items, subtotal, shipping, total, zone, clear } = useCart();
   const [payment, setPayment] = useState<Payment>("cod");
   const [placed, setPlaced] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [orderNo] = useState(
     () => "AG-" + Math.floor(100000 + Math.random() * 900000),
   );
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setPlaced(true);
-    clear();
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    const fd = new FormData(e.currentTarget);
+
+    const order = {
+      orderNo,
+      placedAt: new Date().toISOString(),
+      name: fd.get("name"),
+      email: fd.get("email"),
+      phone: fd.get("phone"),
+      address: fd.get("address"),
+      city: fd.get("city"),
+      notes: fd.get("notes"),
+      zone: SHIPPING[zone].label,
+      payment: payment === "cod" ? "Cash on Delivery" : "bKash (Send Money)",
+      items: items
+        .map(
+          (i) =>
+            `${i.qty}x ${i.country} ${i.edition}/${i.jerseyType}/${i.size} @${i.price}`,
+        )
+        .join(" | "),
+      subtotal,
+      shipping,
+      total,
+    };
+
+    setSubmitting(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(order),
+      });
+      if (!res.ok) throw new Error("request failed");
+      setPlaced(true);
+      clear();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch {
+      setError(
+        "We couldn't place your order. Please check your connection and try again.",
+      );
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   if (placed) {
@@ -114,11 +156,24 @@ export default function CheckoutPage() {
             </div>
           </section>
 
+          {error && (
+            <p className="rounded-[2px] border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {error}
+            </p>
+          )}
+
           <button
             type="submit"
-            className="flex w-full items-center justify-center gap-2 rounded-[2px] bg-primary py-5 text-sm font-bold text-white transition-colors hover:bg-inverse"
+            disabled={submitting}
+            className="flex w-full items-center justify-center gap-2 rounded-[2px] bg-primary py-5 text-sm font-bold text-white transition-colors hover:bg-inverse disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Complete Order <ArrowRight className="h-4 w-4" />
+            {submitting ? (
+              "Placing Order…"
+            ) : (
+              <>
+                Complete Order <ArrowRight className="h-4 w-4" />
+              </>
+            )}
           </button>
         </form>
 
@@ -207,6 +262,7 @@ function Field({
       {textarea ? (
         <textarea
           id={id}
+          name={id}
           rows={3}
           placeholder={label}
           className="w-full resize-none border-b border-line bg-transparent pb-2 text-sm outline-none transition-colors placeholder:text-ink-soft focus:border-primary"
@@ -214,6 +270,7 @@ function Field({
       ) : (
         <input
           id={id}
+          name={id}
           type={type}
           required={required}
           placeholder={label}
