@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+/* ---- Technical Minimalism design tokens (from DESIGN.md) ---- */
+@theme {
+  --color-surface: #f9f9fb;
+  --color-surface-dim: #d9dadc;
+  --color-surface-lowest: #ffffff;
+  --color-surface-low: #f3f3f5;
+  --color-surface-cont: #edeef0;
+  --color-surface-high: #e8e8ea;
+  --color-ink: #1a1c1d;
+  --color-ink-soft: #4c4546;
+  --color-inverse: #2f3132;
+  --color-on-inverse: #f0f0f2;
+  --color-line: #cfc4c5;
+  --color-outline: #7e7576;
+  --color-primary: #000000;
+  --color-mint: #006c50;
+  --color-mint-soft: #9df4d0;
+  --color-mint-sel: #36ffc4;
+
+  --font-display: "Hanken Grotesk", system-ui, sans-serif;
+  --font-sans: "Manrope", system-ui, -apple-system, sans-serif;
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+/* Technical label style */
+.label-tech {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 0.625rem;
+  line-height: 1;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+::selection {
+  background: var(--color-mint-sel);
+  color: #002116;
+}
+
+/* Soft ambient hover aura for interactive cards */
+.hover-aura {
+  transition: box-shadow 0.4s ease, transform 0.4s ease;
+}
+.hover-aura:hover {
+  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.12);
+}
+
+/* Hairline border helper */
+.hairline {
+  box-shadow: inset 0 0 0 1px var(--color-line);
+}
+
+/* Hide number input spinners */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
