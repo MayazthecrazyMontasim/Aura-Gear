@@ -25,8 +25,8 @@ export type CartItem = {
 export type ShippingZone = "inside" | "outside";
 
 export const SHIPPING: Record<ShippingZone, { label: string; cost: number }> = {
-  inside: { label: "Inside Dhaka", cost: 60 },
-  outside: { label: "Outside Dhaka", cost: 150 },
+  inside: { label: "Inside Dhaka", cost: 80 },
+  outside: { label: "Outside Dhaka", cost: 160 },
 };
 
 type CartContextValue = {
